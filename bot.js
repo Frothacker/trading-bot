@@ -6,8 +6,8 @@ let exchange = new ccxt[id]();
 console.log(exchange.name);
 
 // console.log("================================");
-
 // console.log(exchange.isWindows);
+
 
 // Takes a nested array of share amounts, and prices they were bought at; Returns the weighted Average price.
 // Each nested array contains:
@@ -15,6 +15,7 @@ console.log(exchange.name);
 //      at index 2:  and the price those shares were bought at
 // e.g. [[12, 143.23], [15, 188.99], [2, 500]].
 // This above array would indicate 12 shares bought at $143.23, and 15 bought at $188.99, and 2 shares at $500
+
 
 function weightedAverageTradePrice(pricesAndAmounts) {
     // To get average price multiply each price you paid by the number of shares you bought at that price.
@@ -43,6 +44,8 @@ function weightedAverageTradePrice(pricesAndAmounts) {
 
 let shareBuys = [[7, 600], [3, 599.9]];
 averagePrice = weightedAverageTradePrice(shareBuys);
+
+
 
 /** generates buys prices that increase exponentially in distance from a set price ( e.g. the moving average. )
  * @param basepPrice would be the price to base all order off. e.g the Moving Average of 16
@@ -75,15 +78,23 @@ function generateBuys(basePrice, interval, maxPrice) {
 
 const generatebuysresult = generateBuys(16, 0.5, 100);
 
+
+
 /** Finds the average
- *
- *
+ * @param takes an array of integar values
+ * @returns the average of them all
  *
  */
 function getAverage(prices) {
+
     let total = 0;
 
-    prices.forEach(x => {
+    prices.map(x => {
         total += x;
     });
+
+    const average = total / prices.length;
+    return average;
 }
+
+console.log("Average of [2,3,4,5] is -->",getAverage([2,3,4,5]));   // as a test:  should return 3.5
