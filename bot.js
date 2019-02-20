@@ -76,7 +76,7 @@ function generateBuys(basePrice, interval, maxPrice) {
     return { buys, Amounts };
 }
 
-const generatebuysresult = generateBuys(16, 0.5, 100);
+console.log("generated buys are -->", generateBuys(16, 0.5, 100));
 
 
 
