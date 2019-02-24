@@ -35,21 +35,70 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var _this = this;
+exports.__esModule = true;
 require("typescript-require");
 var ccxt = require("ccxt");
 var fs = require("fs-extra");
+//  exchange type
+var Exchange = /** @class */ (function () {
+    function Exchange(id) {
+        try {
+            var exchange = new ccxt[id]();
+        }
+        catch (e) {
+            if (e) {
+                throw Error("Failed to create exchange for id " + id);
+            }
+        }
+        this.exchange = exchange;
+    }
+    return Exchange;
+}());
+exports["default"] = Exchange;
+// return the market avaialabe for an exchange.
+var getMarket = function (e) { return __awaiter(_this, void 0, void 0, function () {
+    var output;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, e.exchange.loadMarkets()];
+            case 1:
+                output = _a.sent();
+                return [2 /*return*/, { id: e.exchange.id, markets: output }];
+        }
+    });
+}); };
+// get all the data from all exchanges.
 var harvestData = function () { return __awaiter(_this, void 0, void 0, function () {
-    var IRId, independentreserve, output;
+    var exchangeIDs, output, _i, exchangeIDs_1, id, exchange, market;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                IRId = "independentreserve";
-                independentreserve = new ccxt[IRId]();
-                return [4 /*yield*/, independentreserve.loadMarkets()];
+                exchangeIDs = [
+                    "kraken",
+                    "independentreserve",
+                    "bitfinex"
+                ];
+                output = new Map();
+                _i = 0, exchangeIDs_1 = exchangeIDs;
+                _a.label = 1;
             case 1:
-                output = _a.sent();
-                console.log(output);
-                fs.writeFileSync("./data.json", JSON.stringify(output));
+                if (!(_i < exchangeIDs_1.length)) return [3 /*break*/, 4];
+                id = exchangeIDs_1[_i];
+                console.log(id);
+                exchange = new Exchange(id);
+                return [4 /*yield*/, getMarket(exchange)];
+            case 2:
+                market = _a.sent();
+                // get symbols
+                // get ticker per symbol?
+                // get balance (need to create with access keys)
+                output[id] = market;
+                _a.label = 3;
+            case 3:
+                _i++;
+                return [3 /*break*/, 1];
+            case 4:
+                fs.writeFileSync("./markets.json", JSON.stringify(output));
                 return [2 /*return*/];
         }
     });

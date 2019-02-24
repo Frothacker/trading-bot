@@ -1,14 +1,54 @@
-"use strict";
 require("typescript-require");
 const ccxt = require("ccxt");
 const fs = require("fs-extra");
 
+//  exchange type
+export default class Exchange {
+    public exchange: any;
+
+    constructor(id: string) {
+        try {
+            const exchange = new ccxt[id]();
+        } catch (e) {
+            if (e) {
+                throw Error(`Failed to create exchange for id ${id}`);
+            }
+        }
+
+        this.exchange = exchange;
+    }
+}
+
+// return the market avaialabe for an exchange.
+const getMarket: any = async (e: Exchange) => {
+    const output: string = await e.exchange.loadMarkets();
+    return { id: e.exchange.id, markets: output };
+};
+
+// get all the data from all exchanges.
 const harvestData = async () => {
-    let IRId: string = "independentreserve";
-    let independentreserve: any = new ccxt[IRId]();
-    const output: string = await independentreserve.loadMarkets();
-    console.log(output);
-    fs.writeFileSync("./data.json", JSON.stringify(output));
+    // list of exchange id's to harvest data from
+    const exchangeIDs: Array<string> = [
+        "kraken",
+        "independentreserve",
+        "bitfinex"
+    ];
+
+    let output: Map<string, object> = new Map();
+
+    // iterate through ids and write all the data from each exchange to a json output.
+    for (const id of exchangeIDs) {
+        console.log(id);
+        let exchange: Exchange = new Exchange(id);
+
+        // get market
+        const market: any = await getMarket(exchange);
+        // get symbols
+        // get ticker per symbol?
+        // get balance (need to create with access keys)
+        output[id] = market;
+    }
+    fs.writeFileSync("./markets.json", JSON.stringify(output));
 
     // let krakenId: string = "kraken";
     // let kraken: any = new ccxt[krakenId]();
