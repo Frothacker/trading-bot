@@ -1,5 +1,14 @@
 {
-  "dependencies": {
-    "ccxt": "^1.17.375"
-  }
+    "dependencies": {
+        "@types/node": "^11.9.4",
+        "ccxt": "^1.17.375",
+        "fs-extra": "^7.0.1",
+        "typescript": "^3.3.3333",
+        "typescript-require": "^0.2.10"
+    },
+    "compilerOptions": {
+        "lib": [
+            "es2015"
+        ]
+    }
 }

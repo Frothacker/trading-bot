@@ -16,7 +16,6 @@ console.log(exchange.name);
 // e.g. [[12, 143.23], [15, 188.99], [2, 500]].
 // This above array would indicate 12 shares bought at $143.23, and 15 bought at $188.99, and 2 shares at $500
 
-
 function weightedAverageTradePrice(pricesAndAmounts) {
     // To get average price multiply each price you paid by the number of shares you bought at that price.
     // Then, add up all of these results.
