@@ -1,0 +1,262 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var _this = this;
+exports.__esModule = true;
+require("typescript-require");
+var ccxt = require("ccxt");
+var fs = require("fs-extra");
+// list of exchange id's to harvest data from
+var exchangeIDs = ["kraken", "independentreserve", "bitfinex"];
+//  exchange type
+var Exchange = /** @class */ (function () {
+    function Exchange(id) {
+        try {
+            var exchange = new ccxt[id]();
+        }
+        catch (e) {
+            if (e) {
+                throw Error("Failed to create exchange for id " + id);
+            }
+        }
+        this.name = id;
+        this.exchange = exchange;
+    }
+    return Exchange;
+}());
+exports["default"] = Exchange;
+/**
+ * Gets the market for an exchange.
+ * @param e The exchange, as an exchange type.
+ * @returns an onject with the market id, and then the market data.
+ */
+var getMarket = function (e) { return __awaiter(_this, void 0, void 0, function () {
+    var output;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, e.exchange.loadMarkets()];
+            case 1:
+                output = _a.sent();
+                return [2 /*return*/, { id: e.exchange.id, markets: output }];
+        }
+    });
+}); };
+/**
+ * Gets the currencies supported by an exchange.
+ * @param e The exchange, as an exchange type.
+ * @returns an onject with the market id, and then the market data.
+ */
+var fetchCurrencies = function (e) { return __awaiter(_this, void 0, void 0, function () {
+    var output;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                // If the exchange can't return currencies, throw error
+                if (e.exchange.hasFetchCurrencies === false) {
+                    throw Error("This currency has no 'fetchCurrencies' method");
+                }
+                return [4 /*yield*/, e.exchange.fetchCurrencies()];
+            case 1:
+                output = _a.sent();
+                return [2 /*return*/, { currencies: output }];
+        }
+    });
+}); };
+/**
+ * Creates exchanges given their IDs
+ * @param exchangeIDs An Array of exchanges, as exchange types.
+ * @returns an array of exchange objects
+ */
+var createExchanges = function (exchangeIDs) {
+    var exchanges = [];
+    for (var _i = 0, exchangeIDs_1 = exchangeIDs; _i < exchangeIDs_1.length; _i++) {
+        var id = exchangeIDs_1[_i];
+        console.log("Retreived " + id);
+        var exchange = new Exchange(id);
+        exchanges.push(exchange);
+    }
+    return exchanges;
+};
+/**
+ * Gets the markets from the entered exchanges
+ * @param exchangeIDs An Array of exchanges, as exchange types.
+ * @returns writes the retreived exchange data to a json file.
+ */
+var getMarkets = function (exchanges) { return __awaiter(_this, void 0, void 0, function () {
+    var output, _i, exchanges_1, exchange, market;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                output = new Map();
+                _i = 0, exchanges_1 = exchanges;
+                _a.label = 1;
+            case 1:
+                if (!(_i < exchanges_1.length)) return [3 /*break*/, 4];
+                exchange = exchanges_1[_i];
+                return [4 /*yield*/, getMarket(exchange)];
+            case 2:
+                market = _a.sent();
+                output[exchange.exchange.name] = market;
+                _a.label = 3;
+            case 3:
+                _i++;
+                return [3 /*break*/, 1];
+            case 4:
+                fs.writeFileSync("./markets.json", JSON.stringify(output));
+                return [2 /*return*/];
+        }
+    });
+}); };
+/**
+ * Gets the prices of requested currencies from an exchange
+ * @param exchange An exchange, as an Exchange type.
+ * @param
+ * @returns writes the retreived exchange data to a json file.
+ */
+var getCurrencies = function (exchangeIDs, currencies) { return __awaiter(_this, void 0, void 0, function () {
+    var output, _i, exchangeIDs_2, id, exchange, currencies_1, currencies_2, e_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                output = new Map();
+                _i = 0, exchangeIDs_2 = exchangeIDs;
+                _a.label = 1;
+            case 1:
+                if (!(_i < exchangeIDs_2.length)) return [3 /*break*/, 7];
+                id = exchangeIDs_2[_i];
+                exchange = new Exchange(id);
+                currencies_1 = void 0;
+                _a.label = 2;
+            case 2:
+                _a.trys.push([2, 4, , 5]);
+                return [4 /*yield*/, fetchCurrencies(exchange)];
+            case 3:
+                currencies_2 = _a.sent();
+                return [3 /*break*/, 5];
+            case 4:
+                e_1 = _a.sent();
+                if (e_1) {
+                    console.log("No currencies fetched for " + id);
+                    return [3 /*break*/, 6];
+                }
+                return [3 /*break*/, 5];
+            case 5:
+                output[id] = currencies_1;
+                _a.label = 6;
+            case 6:
+                _i++;
+                return [3 /*break*/, 1];
+            case 7:
+                fs.writeFileSync("./currencies.json", JSON.stringify(output));
+                return [2 /*return*/];
+        }
+    });
+}); };
+var exchanges = createExchanges([
+    "kraken",
+    "independentreserve",
+    "bitfinex",
+    "bittrex"
+]);
+getMarkets(exchanges);
+// getPrices(exchanges);
+var getEverything = function () { return __awaiter(_this, void 0, void 0, function () {
+    var exchange, _a, _b, btcusd1, btcusd2, btcusdId, symbols, symbols2, currencies, orders;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                exchange = exchanges[0].exchange;
+                _b = (_a = console).log;
+                return [4 /*yield*/, exchange.loadMarkets()];
+            case 1:
+                _b.apply(_a, [_c.sent()]);
+                btcusd1 = exchange.markets["BTC/USD"];
+                btcusd2 = exchange.market("BTC/USD");
+                btcusdId = exchange.marketId("BTC/USD");
+                symbols = exchange.symbols;
+                symbols2 = Object.keys(exchange.markets);
+                console.log(exchange.id, symbols); // print all symbols
+                currencies = exchange.currencies;
+                if (exchanges[0].exchange.has["fetchOrders"]) {
+                    orders = exchanges[0].exchange.fetchOrders("XBT", exchanges[0].exchange.milliseconds() - 86400000, 20, {});
+                    console.log(orders);
+                }
+                return [2 /*return*/];
+        }
+    });
+}); };
+getEverything();
+// getCurrencies();
+// harvestData(exchangeIDs);
+// // load the kracken markets.
+// let krakenId: string = "kraken";
+// let kraken: any = new ccxt[krakenId]();
+// console.log(kraken.id, await kraken.loadMarkets());
+// let kraken = new ccxt.kraken();
+// let bitfinex = new ccxt.bitfinex({ verbose: true });
+// let huobi = new ccxt.huobi();
+// let okcoinusd = new ccxt.okcoinusd({
+//     apiKey: "YOUR_PUBLIC_API_KEY",
+//     secret: "YOUR_SECRET_PRIVATE_KEY"
+// });
+// const exchangeId = "binance",
+//     exchangeClass = ccxt[exchangeId],
+//     exchange = new exchangeClass({
+//         apiKey: "YOUR_API_KEY",
+//         secret: "YOUR_SECRET",
+//         timeout: 30000,
+//         enableRateLimit: true
+//     });
+// console.log(kraken.id, await kraken.loadMarkets());
+// console.log(bitfinex.id, await bitfinex.loadMarkets());
+// console.log(huobi.id, await huobi.loadMarkets());
+// console.log(kraken.id, await kraken.fetchOrderBook(kraken.symbols[0]));
+// console.log(bitfinex.id, await bitfinex.fetchTicker("BTC/USD"));
+// console.log(huobi.id, await huobi.fetchTrades("ETH/CNY"));
+// console.log(okcoinusd.id, await okcoinusd.fetchBalance());
+// sell 1 BTC/USD for market price, sell a bitcoin for dollars immediately
+// console.log(
+//     okcoinusd.id,
+//     await okcoinusd.createMarketSellOrder("BTC/USD", 1)
+// );
+// // buy 1 BTC/USD for $2500, you pay $2500 and receive ฿1 when the order is closed
+// console.log(
+//     okcoinusd.id,
+//     await okcoinusd.createLimitBuyOrder("BTC/USD", 1, 2500.0)
+// );
+// // pass/redefine custom exchange-specific order params: type, amount, price or whatever
+// // use a custom order type
+// bitfinex.createLimitSellOrder("BTC/USD", 1, 10, { type: "trailing-stop" });
