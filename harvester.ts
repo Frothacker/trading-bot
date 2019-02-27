@@ -55,8 +55,8 @@ const fetchCurrencies: any = async (e: Exchange) => {
 const createExchanges = (exchangeIDs: Array<string>) => {
     let exchanges: Array<Exchange> = [];
     for (const id of exchangeIDs) {
-        console.log(`Retreived ${id}`);
         let exchange: Exchange = new Exchange(id);
+        console.log(`Retreived ${exchange.name}`);
         exchanges.push(exchange);
     }
     return exchanges;
@@ -76,7 +76,7 @@ const getMarkets = async (exchanges: Array<Exchange>) => {
         const market: any = await getMarket(exchange);
         output[exchange.exchange.name] = market;
     }
-    fs.writeFileSync("./markets.json", JSON.stringify(output));
+    fs.outputJsonSync(`./markets.json`, JSON.stringify(output));
 };
 
 /**
@@ -120,30 +120,65 @@ getMarkets(exchanges);
 // getPrices(exchanges);
 
 const getEverything = async () => {
-    const exchange = exchanges[0].exchange;
+    const exchange = exchanges[0].exchange; // bittrex
 
-    console.log(await exchange.loadMarkets());
+    await exchange.loadMarkets();
 
-    let btcusd1 = exchange.markets["BTC/USD"]; // get market structure by symbol
-    let btcusd2 = exchange.market("BTC/USD"); // same result in a slightly different way
+    let currencies = exchange.currencies; // a list of currencies
 
-    let btcusdId = exchange.marketId("BTC/USD"); // get market id by symbol
+    const currenciesFilePath: string = `./${exchange.name}/Currencies.json`;
+    try {
+        fs.ensureFileSync(currenciesFilePath);
+        fs.writeFileSync(currenciesFilePath, JSON.stringify(currencies)); // write the currencies to a file + build directories to get there
+    } catch (err) {
+        console.error(err);
+    }
+
+    const data = fs.readJsonSync(currenciesFilePath); // read currencies
+    console.log(data["ADA"]);
+
+    let symbol = "LTC/BTC";
+    let btcusd1 = exchange.markets[symbol]; // get market structure by symbol
+    let btcusd2 = exchange.market(symbol); // same result in a slightly different way
+
+    let marketId = exchange.marketId(symbol); // get market id by symbol
 
     let symbols = exchange.symbols; // get an array of symbols
     let symbols2 = Object.keys(exchange.markets); // same as previous line
 
-    console.log(exchange.id, symbols); // print all symbols
+    // console.log(exchange.id, symbols); // print all symbols
 
-    let currencies = exchange.currencies; // a list of currencies
+    // // if the currency exists
 
-    if (exchanges[0].exchange.has["fetchOrders"]) {
-        const orders = exchanges[0].exchange.fetchOrders(
-            "XBT",
-            exchanges[0].exchange.milliseconds() - 86400000,
-            20,
-            {}
+    if (exchange.has["fetchOrderBook"]) {
+        console.log(`fetching orders from ${exchange.name}`);
+        let orderbookFilePath: string = `./${
+            exchange.name
+        }/${symbol}/Orderbook.json`;
+
+        const dayInMilliseconds: number = 86400000;
+        const days: number = 0.00000000001;
+        const time: number = days * dayInMilliseconds;
+
+        const since: number = exchange.milliseconds() - 1;
+        console.log("\nsince is\n", since);
+
+        const orders = await exchange.fetchOrderBook(symbol, since, 20, {});
+        fs.ensureFileSync(orderbookFilePath);
+        fs.writeFileSync(orderbookFilePath, JSON.stringify(orders));
+
+        console.log(
+            `\n\nThe current orders on ${
+                exchange.name
+            } since ${days} days ago is -->\n`,
+            orders
         );
-        console.log(orders);
+
+        let ticker = await exchange.publicGetTicker({ pair: marketId });
+        console.log(
+            `\n\nThe current ticker price on ${exchange.name} is -->\n`,
+            ticker.result
+        );
     }
 };
 

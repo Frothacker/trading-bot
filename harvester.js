@@ -104,8 +104,8 @@ var createExchanges = function (exchangeIDs) {
     var exchanges = [];
     for (var _i = 0, exchangeIDs_1 = exchangeIDs; _i < exchangeIDs_1.length; _i++) {
         var id = exchangeIDs_1[_i];
-        console.log("Retreived " + id);
         var exchange = new Exchange(id);
+        console.log("Retreived " + exchange.name);
         exchanges.push(exchange);
     }
     return exchanges;
@@ -135,7 +135,7 @@ var getMarkets = function (exchanges) { return __awaiter(_this, void 0, void 0, 
                 _i++;
                 return [3 /*break*/, 1];
             case 4:
-                fs.writeFileSync("./markets.json", JSON.stringify(output));
+                fs.outputJsonSync("./markets.json", JSON.stringify(output));
                 return [2 /*return*/];
         }
     });
@@ -194,27 +194,51 @@ var exchanges = createExchanges([
 getMarkets(exchanges);
 // getPrices(exchanges);
 var getEverything = function () { return __awaiter(_this, void 0, void 0, function () {
-    var exchange, _a, _b, btcusd1, btcusd2, btcusdId, symbols, symbols2, currencies, orders;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+    var exchange, currencies, currenciesFilePath, data, symbol, btcusd1, btcusd2, marketId, symbols, symbols2, orderbookFilePath, dayInMilliseconds, days, time, since, orders, ticker;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
             case 0:
                 exchange = exchanges[0].exchange;
-                _b = (_a = console).log;
                 return [4 /*yield*/, exchange.loadMarkets()];
             case 1:
-                _b.apply(_a, [_c.sent()]);
-                btcusd1 = exchange.markets["BTC/USD"];
-                btcusd2 = exchange.market("BTC/USD");
-                btcusdId = exchange.marketId("BTC/USD");
+                _a.sent();
+                currencies = exchange.currencies;
+                currenciesFilePath = "./" + exchange.name + "/Currencies.json";
+                try {
+                    fs.ensureFileSync(currenciesFilePath);
+                    fs.writeFileSync(currenciesFilePath, JSON.stringify(currencies)); // write the currencies to a file + build directories to get there
+                }
+                catch (err) {
+                    console.error(err);
+                }
+                data = fs.readJsonSync(currenciesFilePath);
+                console.log(data["ADA"]);
+                symbol = "LTC/BTC";
+                btcusd1 = exchange.markets[symbol];
+                btcusd2 = exchange.market(symbol);
+                marketId = exchange.marketId(symbol);
                 symbols = exchange.symbols;
                 symbols2 = Object.keys(exchange.markets);
-                console.log(exchange.id, symbols); // print all symbols
-                currencies = exchange.currencies;
-                if (exchanges[0].exchange.has["fetchOrders"]) {
-                    orders = exchanges[0].exchange.fetchOrders("XBT", exchanges[0].exchange.milliseconds() - 86400000, 20, {});
-                    console.log(orders);
-                }
-                return [2 /*return*/];
+                if (!exchange.has["fetchOrderBook"]) return [3 /*break*/, 4];
+                console.log("fetching orders from " + exchange.name);
+                orderbookFilePath = "./" + exchange.name + "/" + symbol + "/Orderbook.json";
+                dayInMilliseconds = 86400000;
+                days = 0.00000000001;
+                time = days * dayInMilliseconds;
+                since = exchange.milliseconds() - 1;
+                console.log("\nsince is\n", since);
+                return [4 /*yield*/, exchange.fetchOrderBook(symbol, since, 20, {})];
+            case 2:
+                orders = _a.sent();
+                fs.ensureFileSync(orderbookFilePath);
+                fs.writeFileSync(orderbookFilePath, JSON.stringify(orders));
+                console.log("\n\nThe current orders on " + exchange.name + " since " + days + " days ago is -->\n", orders);
+                return [4 /*yield*/, exchange.publicGetTicker({ pair: marketId })];
+            case 3:
+                ticker = _a.sent();
+                console.log("\n\nThe current ticker price on " + exchange.name + " is -->\n", ticker.result);
+                _a.label = 4;
+            case 4: return [2 /*return*/];
         }
     });
 }); };
