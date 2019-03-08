@@ -77,31 +77,28 @@ const getMarkets = async (exchanges: Array<Exchange>) => {
 
 /**
  * Gets the prices of requested currencies from an exchange
- * @param exchange An exchange, as an Exchange type.
- * @param
+ * @param exchanges An array of exchanges, as an Exchange types.
  * @returns writes the retreived exchange data to a json file.
  */
-const getCurrencies = async (
-    exchangeIDs: Array<string>,
-    currencies: Array<string>
-) => {
+const getCurrencies = async (exchanges: Array<Exchange>) => {
     let output: Map<string, object> = new Map();
 
     // Iterate through ids and write all the currency data from each exchange to a json file.
-    for (const id of exchangeIDs) {
-        let exchange: Exchange = new Exchange(id);
+    for (const exchange of exchanges) {
         let currencies: any;
 
         try {
             const currencies: any = await fetchCurrencies(exchange);
         } catch (e) {
             if (e) {
-                console.log(`No currencies fetched for ${id}`);
+                console.log(
+                    `No currencies fetched for ${exchange.exchange.id}`
+                );
                 continue;
             }
         }
 
-        output[id] = currencies;
+        output[exchange.exchange.id] = currencies;
     }
     fs.writeFileSync("./currencies.json", JSON.stringify(output));
 };
@@ -112,8 +109,17 @@ const exchanges: Array<Exchange> = createExchanges([
     "bitfinex",
     "bittrex"
 ]);
-getMarkets(exchanges);
+
+getMarkets(exchanges); // always call first to ensure correct data is returned.
 // getPrices(exchanges);
+
+/**
+ * Checks the BTC prices accross given exchanges
+ * @param exchanges An array of exchanges, as an Exchange type.
+ * @param
+ * @returns writes the retreived exchange data to a json file.
+ */
+const check_arbitrage_btc = async (exchanges: Array<Exchange>) => {};
 
 const getEverything = async () => {
     const exchange = exchanges[0].exchange; // bittrex
