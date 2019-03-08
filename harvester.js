@@ -39,13 +39,11 @@ exports.__esModule = true;
 require("typescript-require");
 var ccxt = require("ccxt");
 var fs = require("fs-extra");
-// list of exchange id's to harvest data from
-var exchangeIDs = ["kraken", "independentreserve", "bitfinex"];
 //  exchange type
 var Exchange = /** @class */ (function () {
     function Exchange(id) {
         try {
-            var exchange = new ccxt[id]();
+            this.exchange = new ccxt[id]();
         }
         catch (e) {
             if (e) {
@@ -53,7 +51,6 @@ var Exchange = /** @class */ (function () {
             }
         }
         this.name = id;
-        this.exchange = exchange;
     }
     return Exchange;
 }());

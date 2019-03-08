@@ -2,9 +2,6 @@ require("typescript-require");
 const ccxt = require("ccxt");
 const fs = require("fs-extra");
 
-// list of exchange id's to harvest data from
-const exchangeIDs: Array<string> = ["kraken", "independentreserve", "bitfinex"];
-
 //  exchange type
 export default class Exchange {
     public exchange: any;
@@ -12,14 +9,13 @@ export default class Exchange {
 
     constructor(id: string) {
         try {
-            const exchange = new ccxt[id]();
+            this.exchange = new ccxt[id]();
         } catch (e) {
             if (e) {
                 throw Error(`Failed to create exchange for id ${id}`);
             }
         }
         this.name = id;
-        this.exchange = exchange;
     }
 }
 
@@ -182,7 +178,7 @@ const getEverything = async () => {
     }
 };
 
-getEverything();
+// getEverything();
 
 // getCurrencies();
 
