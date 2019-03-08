@@ -139,39 +139,38 @@ var getMarkets = function (exchanges) { return __awaiter(_this, void 0, void 0, 
 }); };
 /**
  * Gets the prices of requested currencies from an exchange
- * @param exchange An exchange, as an Exchange type.
- * @param
+ * @param exchanges An array of exchanges, as an Exchange types.
  * @returns writes the retreived exchange data to a json file.
  */
-var getCurrencies = function (exchangeIDs, currencies) { return __awaiter(_this, void 0, void 0, function () {
-    var output, _i, exchangeIDs_2, id, exchange, currencies_1, currencies_2, e_1;
+var getCurrencies = function (exchanges) { return __awaiter(_this, void 0, void 0, function () {
+    var output, _i, exchanges_2, exchange, currencies, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 output = new Map();
-                _i = 0, exchangeIDs_2 = exchangeIDs;
+                _i = 0, exchanges_2 = exchanges;
                 _a.label = 1;
             case 1:
-                if (!(_i < exchangeIDs_2.length)) return [3 /*break*/, 7];
-                id = exchangeIDs_2[_i];
-                exchange = new Exchange(id);
-                currencies_1 = void 0;
+                if (!(_i < exchanges_2.length)) return [3 /*break*/, 7];
+                exchange = exchanges_2[_i];
+                currencies = void 0;
                 _a.label = 2;
             case 2:
                 _a.trys.push([2, 4, , 5]);
-                return [4 /*yield*/, fetchCurrencies(exchange)];
+                return [4 /*yield*/, exchange.exchange.fetchCurrencies()];
             case 3:
-                currencies_2 = _a.sent();
+                currencies = _a.sent();
                 return [3 /*break*/, 5];
             case 4:
                 e_1 = _a.sent();
                 if (e_1) {
-                    console.log("No currencies fetched for " + id);
+                    console.log("No currencies fetched for " + exchange.exchange.id);
                     return [3 /*break*/, 6];
                 }
                 return [3 /*break*/, 5];
             case 5:
-                output[id] = currencies_1;
+                console.log(currencies);
+                output[exchange.exchange.id] = currencies;
                 _a.label = 6;
             case 6:
                 _i++;
@@ -188,8 +187,17 @@ var exchanges = createExchanges([
     "bitfinex",
     "bittrex"
 ]);
-getMarkets(exchanges);
-// getPrices(exchanges);
+getMarkets(exchanges); // always call first to ensure correct data is returned.
+getCurrencies(exchanges);
+/**
+ * Checks the BTC prices accross given exchanges
+ * @param exchanges An array of exchanges, as an Exchange type.
+ * @param
+ * @returns writes the retreived exchange data to a json file.
+ */
+var check_arbitrage_btc = function (exchanges) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+    return [2 /*return*/];
+}); }); };
 var getEverything = function () { return __awaiter(_this, void 0, void 0, function () {
     var exchange, currencies, currenciesFilePath, data, symbol, btcusd1, btcusd2, marketId, symbols, symbols2, orderbookFilePath, dayInMilliseconds, days, time, since, orders, ticker;
     return __generator(this, function (_a) {
@@ -239,7 +247,7 @@ var getEverything = function () { return __awaiter(_this, void 0, void 0, functi
         }
     });
 }); };
-getEverything();
+// getEverything();
 // getCurrencies();
 // harvestData(exchangeIDs);
 // // load the kracken markets.

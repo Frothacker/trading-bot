@@ -88,7 +88,7 @@ const getCurrencies = async (exchanges: Array<Exchange>) => {
         let currencies: any;
 
         try {
-            const currencies: any = await fetchCurrencies(exchange);
+            currencies = await exchange.exchange.fetchCurrencies();
         } catch (e) {
             if (e) {
                 console.log(
@@ -97,6 +97,8 @@ const getCurrencies = async (exchanges: Array<Exchange>) => {
                 continue;
             }
         }
+
+        console.log(currencies);
 
         output[exchange.exchange.id] = currencies;
     }
@@ -111,7 +113,7 @@ const exchanges: Array<Exchange> = createExchanges([
 ]);
 
 getMarkets(exchanges); // always call first to ensure correct data is returned.
-// getPrices(exchanges);
+getCurrencies(exchanges);
 
 /**
  * Checks the BTC prices accross given exchanges
