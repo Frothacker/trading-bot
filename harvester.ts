@@ -30,7 +30,7 @@ const getMarket: any = async (e: Exchange) => {
 };
 
 /**
- * Gets the currencies supported by an exchange.
+ * Gets the currencies supported by an exchange, returned in an object. (kindo f a useless function? it already exists below).
  * @param e The exchange, as an exchange type.
  * @returns an onject with the market id, and then the market data.
  */
@@ -112,16 +112,76 @@ const exchanges: Array<Exchange> = createExchanges([
     "bittrex"
 ]);
 
-getMarkets(exchanges); // always call first to ensure correct data is returned.
-getCurrencies(exchanges);
-
 /**
  * Checks the BTC prices accross given exchanges
  * @param exchanges An array of exchanges, as an Exchange type.
  * @param
  * @returns writes the retreived exchange data to a json file.
  */
-const check_arbitrage_btc = async (exchanges: Array<Exchange>) => {};
+const checkArbitrageBTC = async (exchanges: Array<Exchange>) => {
+    // Iterate through ids and write all the currency data from each exchange to a json file.
+    for (const exchange of exchanges) {
+        let ohlcv: number[];
+        const pair: string = "BTC/USD";
+        const timeframe: string = "1h"; // TODO add check for timeframe
+
+        // const symbols = Object.keys(exchange.exchange.markets); // get an array of symbols
+        // console.log(`symbols are ${symbols})`);
+
+        // symbols.includes(pair)
+        //     ? ""
+        //     : console.log(
+        //           `Failed to fetch OHLCV from ${
+        //               exchange.exchange.id
+        //           }, this exhcange does not support ${pair}\n`
+        //       );
+
+        if (exchange.exchange.has.fetchOHLCV === true) {
+            try {
+                ohlcv = await exchange.exchange.fetchOHLCV(pair, timeframe);
+            } catch (e) {
+                if (e) {
+                    console.log(
+                        `\nFailed to fetch OHLCV for ${pair} using ${timeframe} candles on ${
+                            exchange.exchange.id
+                        }`
+                    );
+                    const symbols = exchange.exchange.symbols;
+                    const timeframes = exchange.exchange.timeframes;
+                    console.log(`Available pairs are \n ${symbols}`);
+                    console.log("Available timeframes are");
+                    console.log(timeframes);
+                    continue;
+                }
+            }
+
+            const index: number = 4;
+            const lastPrice: number = ohlcv[ohlcv.length - 1][index]; // closing price
+            const series: number[] = ohlcv.slice(-80).map(x => x[index]); // closing price
+
+            console.log(
+                `\n The exchange rate of ${pair} at ${
+                    exchange.exchange.id
+                } is ${lastPrice}\n`
+            );
+        } else {
+            console.log(
+                `\nFailed to fetch OHLCV for ${pair} using ${timeframe} candles on ${
+                    exchange.exchange.id
+                }`
+            );
+            console.log(
+                ` ${
+                    exchange.exchange.id
+                } does not support the function fetchOHLCV \n`
+            );
+        }
+    }
+};
+
+getMarkets(exchanges); // always call first to ensure correct data is returned.
+// getCurrencies(exchanges);
+checkArbitrageBTC(exchanges);
 
 const getEverything = async () => {
     const exchange = exchanges[0].exchange; // bittrex

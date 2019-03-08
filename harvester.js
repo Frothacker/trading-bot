@@ -72,7 +72,7 @@ var getMarket = function (e) { return __awaiter(_this, void 0, void 0, function 
     });
 }); };
 /**
- * Gets the currencies supported by an exchange.
+ * Gets the currencies supported by an exchange, returned in an object. (kindo f a useless function? it already exists below).
  * @param e The exchange, as an exchange type.
  * @returns an onject with the market id, and then the market data.
  */
@@ -187,17 +187,78 @@ var exchanges = createExchanges([
     "bitfinex",
     "bittrex"
 ]);
-getMarkets(exchanges); // always call first to ensure correct data is returned.
-getCurrencies(exchanges);
 /**
  * Checks the BTC prices accross given exchanges
  * @param exchanges An array of exchanges, as an Exchange type.
  * @param
  * @returns writes the retreived exchange data to a json file.
  */
-var check_arbitrage_btc = function (exchanges) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/];
-}); }); };
+var checkArbitrageBTC = function (exchanges) { return __awaiter(_this, void 0, void 0, function () {
+    var _loop_1, _i, exchanges_3, exchange;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _loop_1 = function (exchange) {
+                    var ohlcv, pair, timeframe, e_2, symbols, timeframes, index_1, lastPrice, series;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                ohlcv = void 0;
+                                pair = "BTC/USD";
+                                timeframe = "1h";
+                                if (!(exchange.exchange.has.fetchOHLCV === true)) return [3 /*break*/, 5];
+                                _a.label = 1;
+                            case 1:
+                                _a.trys.push([1, 3, , 4]);
+                                return [4 /*yield*/, exchange.exchange.fetchOHLCV(pair, timeframe)];
+                            case 2:
+                                ohlcv = _a.sent();
+                                return [3 /*break*/, 4];
+                            case 3:
+                                e_2 = _a.sent();
+                                if (e_2) {
+                                    console.log("\nFailed to fetch OHLCV for " + pair + " using " + timeframe + " candles on " + exchange.exchange.id);
+                                    symbols = exchange.exchange.symbols;
+                                    timeframes = exchange.exchange.timeframes;
+                                    console.log("Available pairs are \n " + symbols);
+                                    console.log("Available timeframes are");
+                                    console.log(timeframes);
+                                    return [2 /*return*/, "continue"];
+                                }
+                                return [3 /*break*/, 4];
+                            case 4:
+                                index_1 = 4;
+                                lastPrice = ohlcv[ohlcv.length - 1][index_1];
+                                series = ohlcv.slice(-80).map(function (x) { return x[index_1]; });
+                                console.log("\n The exchange rate of " + pair + " at " + exchange.exchange.id + " is " + lastPrice + "\n");
+                                return [3 /*break*/, 6];
+                            case 5:
+                                console.log("\nFailed to fetch OHLCV for " + pair + " using " + timeframe + " candles on " + exchange.exchange.id);
+                                console.log(" " + exchange.exchange.id + " does not support the function fetchOHLCV \n");
+                                _a.label = 6;
+                            case 6: return [2 /*return*/];
+                        }
+                    });
+                };
+                _i = 0, exchanges_3 = exchanges;
+                _a.label = 1;
+            case 1:
+                if (!(_i < exchanges_3.length)) return [3 /*break*/, 4];
+                exchange = exchanges_3[_i];
+                return [5 /*yield**/, _loop_1(exchange)];
+            case 2:
+                _a.sent();
+                _a.label = 3;
+            case 3:
+                _i++;
+                return [3 /*break*/, 1];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+getMarkets(exchanges); // always call first to ensure correct data is returned.
+// getCurrencies(exchanges);
+checkArbitrageBTC(exchanges);
 var getEverything = function () { return __awaiter(_this, void 0, void 0, function () {
     var exchange, currencies, currenciesFilePath, data, symbol, btcusd1, btcusd2, marketId, symbols, symbols2, orderbookFilePath, dayInMilliseconds, days, time, since, orders, ticker;
     return __generator(this, function (_a) {
