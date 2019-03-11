@@ -199,44 +199,52 @@ var checkArbitrageBTC = function (exchanges) { return __awaiter(_this, void 0, v
         switch (_a.label) {
             case 0:
                 _loop_1 = function (exchange) {
-                    var ohlcv, pair, timeframe, e_2, symbols, timeframes, index_1, lastPrice, series;
+                    var ohlcv, pair, timeframe, symbols, e_2, symbols_1, timeframes, index_1, lastPrice, series;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
                                 ohlcv = void 0;
                                 pair = "BTC/USD";
                                 timeframe = "1h";
-                                if (!(exchange.exchange.has.fetchOHLCV === true)) return [3 /*break*/, 5];
-                                _a.label = 1;
+                                // first load markets
+                                return [4 /*yield*/, exchange.exchange.loadMarkets()];
                             case 1:
-                                _a.trys.push([1, 3, , 4]);
-                                return [4 /*yield*/, exchange.exchange.fetchOHLCV(pair, timeframe)];
-                            case 2:
-                                ohlcv = _a.sent();
-                                return [3 /*break*/, 4];
-                            case 3:
-                                e_2 = _a.sent();
-                                if (e_2) {
-                                    console.log("\nFailed to fetch OHLCV for " + pair + " using " + timeframe + " candles on " + exchange.exchange.id);
-                                    symbols = exchange.exchange.symbols;
-                                    timeframes = exchange.exchange.timeframes;
-                                    console.log("Available pairs are \n " + symbols);
-                                    console.log("Available timeframes are");
-                                    console.log(timeframes);
+                                // first load markets
+                                _a.sent();
+                                symbols = exchange.exchange.symbols;
+                                if (!symbols.includes(pair)) {
+                                    console.log("Failed to fetch OHLCV from " + exchange.exchange.id + ", this exhcange does not support " + pair + "\n");
                                     return [2 /*return*/, "continue"];
                                 }
-                                return [3 /*break*/, 4];
+                                if (!(exchange.exchange.has.fetchOHLCV === true)) return [3 /*break*/, 6];
+                                _a.label = 2;
+                            case 2:
+                                _a.trys.push([2, 4, , 5]);
+                                return [4 /*yield*/, exchange.exchange.fetchOHLCV(pair, timeframe)];
+                            case 3:
+                                ohlcv = _a.sent();
+                                return [3 /*break*/, 5];
                             case 4:
+                                e_2 = _a.sent();
+                                // if error, throw informative log and continue to next exchange
+                                console.log("\nFailed to fetch OHLCV for " + pair + " using " + timeframe + " candles on " + exchange.exchange.id);
+                                symbols_1 = exchange.exchange.symbols;
+                                timeframes = exchange.exchange.timeframes;
+                                console.log("Available timeframes for exchange ${exchange.exchange.id} are");
+                                console.log(timeframes);
+                                return [2 /*return*/, "continue"];
+                            case 5:
                                 index_1 = 4;
+                                console.log(ohlcv[ohlcv.length - 1]);
                                 lastPrice = ohlcv[ohlcv.length - 1][index_1];
+                                console.log(lastPrice);
                                 series = ohlcv.slice(-80).map(function (x) { return x[index_1]; });
                                 console.log("\n The exchange rate of " + pair + " at " + exchange.exchange.id + " is " + lastPrice + "\n");
-                                return [3 /*break*/, 6];
-                            case 5:
-                                console.log("\nFailed to fetch OHLCV for " + pair + " using " + timeframe + " candles on " + exchange.exchange.id);
-                                console.log(" " + exchange.exchange.id + " does not support the function fetchOHLCV \n");
-                                _a.label = 6;
-                            case 6: return [2 /*return*/];
+                                return [3 /*break*/, 7];
+                            case 6:
+                                console.log("\nFailed to fetch OHLCV for " + pair + " using " + timeframe + " candles on " + exchange.exchange.id + " because this exchange does not support the function fetchOHLCV \n");
+                                _a.label = 7;
+                            case 7: return [2 /*return*/];
                         }
                     });
                 };
@@ -256,7 +264,7 @@ var checkArbitrageBTC = function (exchanges) { return __awaiter(_this, void 0, v
         }
     });
 }); };
-getMarkets(exchanges); // always call first to ensure correct data is returned.
+getMarkets(exchanges); // call first so that ccxt returns data.
 // getCurrencies(exchanges);
 checkArbitrageBTC(exchanges);
 var getEverything = function () { return __awaiter(_this, void 0, void 0, function () {
@@ -271,7 +279,7 @@ var getEverything = function () { return __awaiter(_this, void 0, void 0, functi
                 currencies = exchange.currencies;
                 currenciesFilePath = "./" + exchange.name + "/Currencies.json";
                 try {
-                    fs.ensureFileSync(currenciesFilePath);
+                    fs.ensureFileSync(currenciesFilePath); // ensure a file exists here
                     fs.writeFileSync(currenciesFilePath, JSON.stringify(currencies)); // write the currencies to a file + build directories to get there
                 }
                 catch (err) {

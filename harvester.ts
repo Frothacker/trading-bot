@@ -125,38 +125,45 @@ const checkArbitrageBTC = async (exchanges: Array<Exchange>) => {
         const pair: string = "BTC/USD";
         const timeframe: string = "1h"; // TODO add check for timeframe
 
-        // const symbols = Object.keys(exchange.exchange.markets); // get an array of symbols
-        // console.log(`symbols are ${symbols})`);
+        // first load markets
+        await exchange.exchange.loadMarkets();
+        const symbols = exchange.exchange.symbols; // get an array of symbols
 
-        // symbols.includes(pair)
-        //     ? ""
-        //     : console.log(
-        //           `Failed to fetch OHLCV from ${
-        //               exchange.exchange.id
-        //           }, this exhcange does not support ${pair}\n`
-        //       );
+        if (!symbols.includes(pair)) {
+            console.log(
+                `Failed to fetch OHLCV from ${
+                    exchange.exchange.id
+                }, this exhcange does not support ${pair}\n`
+            );
+            continue;
+        }
 
+        // if the exchange supports fetching OHLCV, then get it, else throw an informative error.
         if (exchange.exchange.has.fetchOHLCV === true) {
             try {
                 ohlcv = await exchange.exchange.fetchOHLCV(pair, timeframe);
             } catch (e) {
-                if (e) {
-                    console.log(
-                        `\nFailed to fetch OHLCV for ${pair} using ${timeframe} candles on ${
-                            exchange.exchange.id
-                        }`
-                    );
-                    const symbols = exchange.exchange.symbols;
-                    const timeframes = exchange.exchange.timeframes;
-                    console.log(`Available pairs are \n ${symbols}`);
-                    console.log("Available timeframes are");
-                    console.log(timeframes);
-                    continue;
-                }
+                // if error, throw informative log and continue to next exchange
+                console.log(
+                    `\nFailed to fetch OHLCV for ${pair} using ${timeframe} candles on ${
+                        exchange.exchange.id
+                    }`
+                );
+                const symbols = exchange.exchange.symbols;
+                const timeframes = exchange.exchange.timeframes;
+                console.log(
+                    "Available timeframes for exchange ${exchange.exchange.id} are"
+                );
+                console.log(timeframes);
+                continue;
             }
 
-            const index: number = 4;
+            const index: number = 4; // [ timestamp, open, high, low, close, volume ]
+
+            console.log(ohlcv[ohlcv.length - 1]); // For some reason the Bitfinex ohlvc call Bitfinex is not returning truthy values.
+
             const lastPrice: number = ohlcv[ohlcv.length - 1][index]; // closing price
+
             const series: number[] = ohlcv.slice(-80).map(x => x[index]); // closing price
 
             console.log(
@@ -168,18 +175,13 @@ const checkArbitrageBTC = async (exchanges: Array<Exchange>) => {
             console.log(
                 `\nFailed to fetch OHLCV for ${pair} using ${timeframe} candles on ${
                     exchange.exchange.id
-                }`
-            );
-            console.log(
-                ` ${
-                    exchange.exchange.id
-                } does not support the function fetchOHLCV \n`
+                } because this exchange does not support the function fetchOHLCV \n`
             );
         }
     }
 };
 
-getMarkets(exchanges); // always call first to ensure correct data is returned.
+getMarkets(exchanges); // call first so that ccxt returns data.
 // getCurrencies(exchanges);
 checkArbitrageBTC(exchanges);
 
@@ -192,7 +194,7 @@ const getEverything = async () => {
 
     const currenciesFilePath: string = `./${exchange.name}/Currencies.json`;
     try {
-        fs.ensureFileSync(currenciesFilePath);
+        fs.ensureFileSync(currenciesFilePath); // ensure a file exists here
         fs.writeFileSync(currenciesFilePath, JSON.stringify(currencies)); // write the currencies to a file + build directories to get there
     } catch (err) {
         console.error(err);
