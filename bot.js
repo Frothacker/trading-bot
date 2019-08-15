@@ -1,21 +1,82 @@
+/** What I want  to do
+ * 1. Get current price of ether
+ * 1.1 Calculate the current value of this account.
+ * 2. Get the swing in price over the last 1 month
+ * 2.1 Get the highest and lowest price in previous 30 days.
+ * 2.2 Calculate the amount of leeway above and below.
+ * 3. Use the leeway on wither side as the upper bound for generateing buys and sells for this month.
+ * 3.1 Generate Correctly wieght buys and sells amounts and at the correct prices.
+ * 3.2 Check that It dosent exceed the maximum balance of the account.
+ * 4. Delete previous buys and sells
+ * 5. Send the new buys and sells to the exchange
+ * 6. Record and buys and sells that occur.
+ * 7. Calculate the total expendetures and total revenues.
+ * 7.1 Calculate total profit or loss for this month.
+ **/
 const ccxt = require("ccxt");
 
-let id = "independentreserve";
-let exchange = new ccxt[id]();
+// 1.
+async function getPriceEth(exchangeName, isUsd) {
+    let exchange = new ccxt[exchangeName]();
+    let currency = "AUD";
+    let pair = "ETH/AUD";
+    // change pair and eth key if usd is the comparison currency
+    if (isUsd) {
+        pair = "ETH/USD";
+        currency = "USD";
+    }
 
-//  20 day MA vs 10 day MA trading bot based on https://www.tradingview.com/script/2cbpO8lO-MA-10-20-Crossover/
+    // Get closing price
+    const timeframeMins = 3; // Candle thickness
+    const index = 4; // [ timestamp, open, high, low, close, volume ], 4 == closing price
 
-/** 
+    // const ohlcv = await new ccxt.kraken().fetchOHLCV(
+    //     pair,
+    //     `${timeframeMins}m`
+    // );
+
+    const ohlcv = await exchange.fetchOHLCV(pair, `${timeframeMins}m`);
+    const lastPrice = ohlcv[ohlcv.length - 1][index]; // closing price
+    let series = ohlcv.map(x => x[index]); // series of closing prices
+
+    console.log(
+        `Price of ${pair} on ${exchangeName} is ${lastPrice + " " + currency}`
+    );
+}
+
+getPriceEth("independentreserve", false);
+// getPriceEth("kraken", true);
+
+// getPrice2();
+
+// Consider 20 day MA vs 10 day MA trading bot based on https://www.tradingview.com/script/2cbpO8lO-MA-10-20-Crossover/
+
+// 2.
+//  Get Price history of last 30 30 days.
+// Use getTrades. Docs are here --> https://github.com/ccxt/ccxt/wiki/Manual#trades-executions-transactions
+
+async function getPreviousTrades(exchangeName) {
+    let exchange = new ccxt[exchangeName]();
+    let currency = "AUD";
+    let pair = "ETH/AUD";
+    let trades = await exchange.fetchTrades(pair);
+    console.log(`\n\n ${trades[0]}`);
+    console.log(trades[0]);
+}
+
+getPreviousTrades("independentreserve");
+
+/**
  * Calculates the weighted Average price
- * @param pricesAndAmounts A nested array, containing two integars. 
+ * @param pricesAndAmounts A nested array, containing two integars.
  *        Each nested array is share amount and an integar, and the price they were bought at as an integar.
- * @returns the weighted average price of all buys. 
+ * @returns the weighted average price of all buys.
  *
  * To illustrate clearly each nested array contains:
  *      at index 1:  Amount of shares
  *      at index 2:  The price those shares were bought at
- * 
- * An example input --> [[12, 143.23], [15, 188.99], [2, 500]].
+ *
+ * An example input --> `[[12, 143.23], [15, 188.99], [2, 500]]`.
  * This above array would indicate 12 shares bought at $143.23, and 15 bought at $188.99, and 2 shares bought at $500
  */
 function weightedAverageTradePrice(pricesAndAmounts) {
@@ -46,8 +107,6 @@ function weightedAverageTradePrice(pricesAndAmounts) {
 let shareBuys = [[7, 600], [3, 599.9]];
 averagePrice = weightedAverageTradePrice(shareBuys);
 
-
-
 /** generates buys prices that increase exponentially in distance from a set price ( e.g. the moving average. )
  * @param basepPrice would be the price to base all order off. e.g the Moving Average of 16
  * @param interval is gap between orders (small is)
@@ -77,13 +136,9 @@ function generateBuys(basePrice, interval, maxPrice) {
     return { buys, Amounts };
 }
 
-console.log("generated buys are -->", generateBuys(16, 0.5, 100));
-
-
-
 /** Finds the average
  * @param takes an array of integar values
- * @returns an average integar 
+ * @returns an average integar
  *
  */
 function getAverage(prices) {
@@ -97,4 +152,8 @@ function getAverage(prices) {
     return average;
 }
 
-console.log("Average of [2,3,4,5] is -->", getAverage([2,3,4,5]));   // as a test:  should return 3.5
+// console.log("Average of [2,3,4,5] is -->", getAverage([2, 3, 4, 5])); // as a test:  should return 3.5
+// console.log("\n");
+
+// console.log("generated buys are -->", generateBuys(16, 0.5, 100));
+

@@ -13,14 +13,14 @@ require("ansicolor").nice;
     // experimental, not yet implemented for all exchanges
     // your contributions are welcome ;)
 
-    const timeframeMins = 15; // Candle thickness
-    const index = 4; // [ timestamp, open, high, low, close, volume ]
-    const ohlcv = await new ccxt.okcoinusd().fetchOHLCV(
-        "BTC/USD",
-        `${timeframeMins}m`
-    );
+    const timeframeMins = "3m"; // time in minutes between prices
+    const timeframeDays = "1d";
+    const ohlcv = await new ccxt.kraken().fetchOHLCV("BTC/USD", timeframeDays);
+
+    const index = 4; // [ timestamp, open, high, low, close, volume ], 4 == closing price
+
     const lastPrice = ohlcv[ohlcv.length - 1][index]; // closing price
-    let series = ohlcv.map(x => x[index]); // closing price
+    let series = ohlcv.map(x => x[index]); // list of closing prices
 
     // output to a file
     const filePath = "./closingValues.json";
@@ -34,13 +34,13 @@ require("ansicolor").nice;
     // Format for chart
     // If series is too long, only present the 100 most recent closing prices on the chart. Else chart become un-readable in terminal due to too many data points in the terminal. Remove line below to chart the full output from 1m and 3m candles.
     series.length > 100
-        ? (series = series.slice(series.length - 100, series.length - 1))
+        ? (series = series.slice(series.length - 101, series.length - 1))
         : "";
-
+    // ₿
     // Create chart
-    const bitcoinRate = ("₿ = $" + lastPrice).green;
+    const bitcoinRate = ("Ether = $" + lastPrice + " on kraken").green;
     const chart = asciichart.plot(series, {
-        height: 50,
+        height: 17,
         padding: "            "
     });
     log.yellow("\n" + chart, bitcoinRate, "\n");
@@ -49,6 +49,9 @@ require("ansicolor").nice;
     console.log(ohlcv.length);
     console.log("series length is\n");
     console.log(series.length);
+
+    let thirtyDayPastPrice = series[series.length - 31];
+    console.log("Price of bitcoin 30 days ago was", thirtyDayPastPrice);
 
     process.exit();
 })();
