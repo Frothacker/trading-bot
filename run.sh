@@ -1,5 +1,8 @@
 
 # compile harvest
-tsc --lib ES2015 ./harvester.ts
+tsc --lib ES2015 ./bot/bot.ts
 
-node ./harvester.js
+node ./bot/bot.js
+
+# tsc --lib ES2015 ./bot/getPriceEth.ts
+# node ./bot/getPriceEth.js

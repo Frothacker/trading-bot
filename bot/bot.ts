@@ -13,58 +13,35 @@
  * 7. Calculate the total expendetures and total revenues.
  * 7.1 Calculate total profit or loss for this month.
  **/
-const ccxt = require("ccxt");
 
-// 1.
-async function getPriceEth(exchangeName, isUsd) {
-    let exchange = new ccxt[exchangeName]();
-    let currency = "AUD";
-    let pair = "ETH/AUD";
-    // change pair and eth key if usd is the comparison currency
-    if (isUsd) {
-        pair = "ETH/USD";
-        currency = "USD";
-    }
-
-    // Get closing price
-    const timeframeMins = 3; // Candle thickness
-    const index = 4; // [ timestamp, open, high, low, close, volume ], 4 == closing price
-
-    // const ohlcv = await new ccxt.kraken().fetchOHLCV(
-    //     pair,
-    //     `${timeframeMins}m`
-    // );
-
-    const ohlcv = await exchange.fetchOHLCV(pair, `${timeframeMins}m`);
-    const lastPrice = ohlcv[ohlcv.length - 1][index]; // closing price
-    let series = ohlcv.map(x => x[index]); // series of closing prices
-
-    console.log(
-        `Price of ${pair} on ${exchangeName} is ${lastPrice + " " + currency}`
-    );
-}
-
-getPriceEth("independentreserve", false);
-// getPriceEth("kraken", true);
-
-// getPrice2();
-
+// --------------- Notes ---------------
 // Consider 20 day MA vs 10 day MA trading bot based on https://www.tradingview.com/script/2cbpO8lO-MA-10-20-Crossover/
 
 // 2.
 //  Get Price history of last 30 30 days.
 // Use getTrades. Docs are here --> https://github.com/ccxt/ccxt/wiki/Manual#trades-executions-transactions
 
-async function getPreviousTrades(exchangeName) {
-    let exchange = new ccxt[exchangeName]();
-    let currency = "AUD";
-    let pair = "ETH/AUD";
+import * as getPriceEth from './getPriceEth';
+
+const ccxt = require("ccxt");
+
+
+const IndResSecret = 'YOUR API SECRET';
+const IndResApiKey = 'YOUR API KEY';
+
+// instantiate the Independant Reserve
+const exchange = new ccxt['independentreserve']();
+exchange.apiKey = IndResApiKey;
+exchange.secret = IndResSecret;
+
+
+async function getPreviousTrades(exchange, pair) {
     let trades = await exchange.fetchTrades(pair);
     console.log(`\n\n ${trades[0]}`);
     console.log(trades[0]);
 }
+// getPreviousTrades(exchange, 'ETH/AUD');
 
-getPreviousTrades("independentreserve");
 
 /**
  * Calculates the weighted Average price
@@ -104,8 +81,29 @@ function weightedAverageTradePrice(pricesAndAmounts) {
     return averagePrice;
 }
 
+async function getBalance(exchangeName, isUsd, apiKey, secret) {
+    let exchange = new ccxt[exchangeName]();
+    exchange.apiKey = apiKey;
+    exchange.secret = secret;
+    let currency = "AUD";
+    let pair = "ETH/AUD";
+    // change pair and eth key if usd is the comparison currency
+    if (isUsd) {
+        pair = "ETH/USD";
+        currency = "USD";
+    }
+
+    console.log('------------ Get Balance -----------');
+    console.log("API key is");
+    console.log(apiKey);
+    console.log("Secret is");
+    console.log(secret);
+
+    console.log(await exchange.fetchBalance())
+}
+
 let shareBuys = [[7, 600], [3, 599.9]];
-averagePrice = weightedAverageTradePrice(shareBuys);
+let averagePrice = weightedAverageTradePrice(shareBuys);
 
 /** generates buys prices that increase exponentially in distance from a set price ( e.g. the moving average. )
  * @param basepPrice would be the price to base all order off. e.g the Moving Average of 16
@@ -157,3 +155,4 @@ function getAverage(prices) {
 
 // console.log("generated buys are -->", generateBuys(16, 0.5, 100));
 
+getPriceEth.getPriceEth("independentreserve", false, 'API Key', 'API Secret', exchange);
