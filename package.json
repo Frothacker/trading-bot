@@ -1,10 +1,10 @@
 {
     "dependencies": {
+        "@types/fs-extra": "^8.0.0",
         "@types/node": "^11.9.4",
         "as-table": "^1.0.36",
         "asciichart": "^1.5.7",
         "ccxt": "^1.17.375",
-        "fs-extra": "^7.0.1",
         "ololog": "^1.1.117",
         "typescript": "^3.3.3333",
         "typescript-require": "^0.2.10"

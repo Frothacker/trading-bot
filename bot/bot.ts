@@ -28,20 +28,55 @@ import generateBuys from './generateBuys';
 import weightedAverageTradePrice from './weightedAverageTradePrice';
 import getBalance from './getBalance';
 
-const ccxt = require("ccxt");
-const fs = require("fs-extra");
+import ccxt = require("ccxt");
+import fs = require("fs-extra");
 
+// loop through all the exchanges in the file and instantiate them with their api keys
 
-// Get the API Key and secret formt eh Keystore File. 
-const keyStoreFileData = JSON.parse(fs.readFileSync('./api_keys.json'));
-const IRApiKey = keyStoreFileData.independantReserve.apiKey;
-const IRSecret = keyStoreFileData.independantReserve.apiSecret;
+async function generateExchanges() {
+    console.log("ee");
+    let instantiatedExchanges = [];
+    // Get Keystore File. Pasre it from JSON into an object.
+    const path = fs.ensureFileSync('./api_keys.json');
+    const keyStoreFileData = await JSON.parse(fs.readFileSync(`./api_keys.json`, 'utf8'));
+    // console.log(keyStoreFileData.independantreserve);
 
-// instantiate the Independant Reserve
-const exchange = new ccxt['independentreserve']();
-// Add the API Key and secrect to teh exchange. This permits the creation of orders, querying balance, and withdrawrals. 
-exchange.apiKey = IRApiKey;
-exchange.secret = IRSecret;
+    // get a list of all ccxt supported exchanges
+    const exchangeList = ccxt.exchanges;
+
+    exchangeList.forEach(exchangeName => {
+        if (keyStoreFileData[exchangeName] != undefined) {
+            let exchangeKeyStoreData = keyStoreFileData[exchangeName];
+
+            // instantiate the exchange 
+            const exchange = new ccxt[exchangeName];
+
+            // get the API and secrect from datastore
+            const apiKey = exchangeKeyStoreData.apiKey;
+            const secret = exchangeKeyStoreData.apiSecret;
+
+            // Add the API Key and secret to exchange. This permits the creation of orders, querying balance, and withdrawrals. 
+            exchange.apiKey = apiKey;
+            exchange.secret = secret;
+
+            // add this exchange to the array of exchanges.
+            instantiatedExchanges.push(exchange);
+
+        }
+    });
+    return instantiatedExchanges;
+}
+
+async function main() {
+let e = await generateExchanges();
+
+let bittrex = e[0];
+let IR = e[1];
+
+console.log(IR.name);
+}
+
+main();
 
 // getBalance(exchange, "ETH");
 
@@ -53,13 +88,19 @@ exchange.secret = IRSecret;
 // console.log("generated buys are -->", generateBuys(16, 0.5, 100));
 
 // Needs Work
-const buys = generateBuys(0,0,1000);
-console.log('buys are -->');
-console.log(buys);
+// const buys = generateBuys(0,1,100);
+// console.log('buys are -->');
+// console.log(buys);
 // console.log(buys.buys);
 // console.log(buys.amounts);
 
-
-// getPriceEth("independentreserve", false, 'API Key', 'API Secret', exchange);
+// getPriceEth(exchange, false);
 // getPreviousTrades(exchange, "ETH/AUD");
 // console.log(getAverage([12, 13, 14]));
+
+
+// TODO when exhcange is online 
+// async function buyOrder(symbol, amount, price) {
+//     const feedback = exchange.createLimitBuyOrder(symbol, amount, price);
+//     return feedback;
+// }

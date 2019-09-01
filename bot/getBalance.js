@@ -50,10 +50,10 @@ function getBalance(exchange, currency) {
             switch (_a.label) {
                 case 0:
                     if (!!exchange.secret) return [3 /*break*/, 1];
-                    throw console.error('[getBalance] The exchange given has no api secret added. Please add your api Secret to the exchange instance before passing to this function');
+                    throw new Error('[getBalance] The exchange given has no api secret added. Please add your api Secret to the exchange instance before passing to this function');
                 case 1:
                     if (!!exchange.apiKey) return [3 /*break*/, 2];
-                    throw console.error('[getBalance] The exchange given has no api Key added. Please add you api Key to the exchange instance before passing to this function');
+                    throw new Error('[getBalance] The exchange given has no api Key added. Please add you api Key to the exchange instance before passing to this function');
                 case 2: return [4 /*yield*/, exchange.fetchBalance()];
                 case 3:
                     // Get the balance

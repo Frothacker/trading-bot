@@ -10,7 +10,6 @@ exports.__esModule = true;
 // currently generate amounts match the exponential of the orders (using same exponential base and intervals).
 function generateBuys(basePrice, interval, maxPrice) {
     if (interval <= 0) {
-        // console.error("[generateBuys] interval must be > 0");
         throw new Error("[generateBuys] Interval must be > 0");
     }
     var buys = [];
