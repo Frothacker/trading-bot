@@ -53,7 +53,7 @@ exchange.secret = IRSecret;
 // console.log("generated buys are -->", generateBuys(16, 0.5, 100));
 
 // Needs Work
-const buys = generateBuys(1,1,10);
+const buys = generateBuys(0,0,1000);
 console.log('buys are -->');
 console.log(buys);
 // console.log(buys.buys);

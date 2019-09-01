@@ -12,7 +12,7 @@ export default class Exchange {
             this.exchange = new ccxt[id]();
         } catch (e) {
             if (e) {
-                throw Error(`Failed to create exchange for id ${id}`);
+                throw new Error(`Failed to create exchange for id ${id}`);
             }
         }
         this.name = id;
@@ -37,7 +37,7 @@ const getMarket: any = async (e: Exchange) => {
 const fetchCurrencies: any = async (e: Exchange) => {
     // If the exchange can't return currencies, throw error
     if (e.exchange.hasFetchCurrencies === false) {
-        throw Error("This currency has no 'fetchCurrencies' method");
+        throw new Error("This currency has no 'fetchCurrencies' method");
     }
     const output: string = await e.exchange.fetchCurrencies();
     return { currencies: output };
@@ -132,7 +132,7 @@ const checkArbitrageBTC = async (exchanges: Array<Exchange>) => {
         if (!symbols.includes(pair)) {
             console.log(
                 `Failed to fetch OHLCV from ${
-                    exchange.exchange.id
+                exchange.exchange.id
                 }, this exhcange does not support ${pair}\n`
             );
             continue;
@@ -145,9 +145,7 @@ const checkArbitrageBTC = async (exchanges: Array<Exchange>) => {
             } catch (e) {
                 // if error, throw informative log and continue to next exchange
                 console.log(
-                    `\nFailed to fetch OHLCV for ${pair} using ${timeframe} candles on ${
-                        exchange.exchange.id
-                    }`
+                    `\nFailed to fetch OHLCV for ${pair} using ${timeframe} candles on ${exchange.exchange.id}`
                 );
                 const symbols = exchange.exchange.symbols;
                 const timeframes = exchange.exchange.timeframes;
@@ -168,13 +166,13 @@ const checkArbitrageBTC = async (exchanges: Array<Exchange>) => {
 
             console.log(
                 `\n The exchange rate of ${pair} at ${
-                    exchange.exchange.id
+                exchange.exchange.id
                 } is ${lastPrice}\n`
             );
         } else {
             console.log(
                 `\nFailed to fetch OHLCV for ${pair} using ${timeframe} candles on ${
-                    exchange.exchange.id
+                exchange.exchange.id
                 } because this exchange does not support the function fetchOHLCV \n`
             );
         }
@@ -197,7 +195,7 @@ const getEverything = async () => {
         fs.ensureFileSync(currenciesFilePath); // ensure a file exists here
         fs.writeFileSync(currenciesFilePath, JSON.stringify(currencies)); // write the currencies to a file + build directories to get there
     } catch (err) {
-        console.error(err);
+        throw new Error(err);
     }
 
     const data = fs.readJsonSync(currenciesFilePath); // read currencies
@@ -220,7 +218,7 @@ const getEverything = async () => {
         console.log(`fetching orders from ${exchange.name}`);
         let orderbookFilePath: string = `./${
             exchange.name
-        }/${symbol}/Orderbook.json`;
+            }/${symbol}/Orderbook.json`;
 
         const dayInMilliseconds: number = 86400000;
         const days: number = 0.00000000001;
@@ -235,7 +233,7 @@ const getEverything = async () => {
 
         console.log(
             `\n\nThe current orders on ${
-                exchange.name
+            exchange.name
             } since ${days} days ago is -->\n`,
             orders
         );

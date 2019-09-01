@@ -34,7 +34,7 @@ exchange.secret = IRSecret;
 // console.log("Average of [2,3,4,5] is -->", getAverage([2, 3, 4, 5])); // as a test:  should return 3.5
 // console.log("generated buys are -->", generateBuys(16, 0.5, 100));
 // Needs Work
-var buys = generateBuys_1["default"](1, 1, 10);
+var buys = generateBuys_1["default"](0, 0, 1000);
 console.log('buys are -->');
 console.log(buys);
 // console.log(buys.buys);

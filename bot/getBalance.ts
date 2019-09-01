@@ -13,10 +13,10 @@ export default async function getBalance(exchange, currency: String) {
     // To do Refactor out into separate function
     // Check to make sure the API Keya nd Secret are passed in
     if (!exchange.secret) {
-        throw console.error('[getBalance] The exchange given has no api secret added. Please add your api Secret to the exchange instance before passing to this function');
+        throw new Error('[getBalance] The exchange given has no api secret added. Please add your api Secret to the exchange instance before passing to this function');
     }
     else if (!exchange.apiKey) {
-        throw console.error('[getBalance] The exchange given has no api Key added. Please add you api Key to the exchange instance before passing to this function');
+        throw new Error('[getBalance] The exchange given has no api Key added. Please add you api Key to the exchange instance before passing to this function');
     }
     else {
         // Get the balance

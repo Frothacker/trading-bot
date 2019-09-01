@@ -9,9 +9,15 @@
 // TODO generate the buy amounts also.
 // currently generate amounts match the exponential of the orders (using same exponential base and intervals).
 export default function generateBuys(basePrice, interval, maxPrice) {
+    if (interval <= 0) {
+        throw new Error( "[generateBuys] Interval must be > 0");
+        
+    }
+
+
     const buys = [];
     const amounts = [];
-    const base = 1.5; // adjusts the steepness of the curve. Higher number means a larger gap between orders.
+    const base = 2.718281828459045; // adjusts the steepness of the curve. Higher number means a larger gap between orders.
     for (let i = 0; i < 100; i = i + interval) {
         // calculate exponentially increasing price. (base to the power of)
         const newAmount = base ** i;
