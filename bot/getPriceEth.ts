@@ -1,12 +1,6 @@
-
-const ccxt = require('ccxt');
-
-export async function getPriceEth(exchangeName, isUsd, apiKey, secret, exchange) {
-    // let exchange = new ccxt[exchangeName]();
-    // exchange.apiKey = apiKey;
-    // exchange.secret = secret;
-    let currency = "AUD";
+export default async function getPriceEth(exchange, isUsd) {
     let pair = "ETH/AUD";
+    let currency = "AUD";
     // change pair and eth key if usd is the comparison currency
     if (isUsd) {
         pair = "ETH/USD";
@@ -22,5 +16,5 @@ export async function getPriceEth(exchangeName, isUsd, apiKey, secret, exchange)
     const ohlcv = await exchange.fetchOHLCV(pair, `${timeframeMins}m`);
     const lastPrice = ohlcv[ohlcv.length - 1][index]; // closing price
     let series = ohlcv.map(x => x[index]); // series of closing prices
-    console.log(`Price of ${pair} on ${exchangeName} is ${lastPrice + " " + currency}`);
+    console.log(`Price of ${pair} on ${exchange} is ${lastPrice + " " + currency}`);
 }

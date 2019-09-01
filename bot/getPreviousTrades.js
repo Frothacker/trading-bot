@@ -35,30 +35,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-function getPriceEth(exchange, isUsd) {
+function getPreviousTrades(exchange, pair) {
     return __awaiter(this, void 0, void 0, function () {
-        var pair, currency, timeframeMins, index, ohlcv, lastPrice, series;
+        var trades;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    pair = "ETH/AUD";
-                    currency = "AUD";
-                    // change pair and eth key if usd is the comparison currency
-                    if (isUsd) {
-                        pair = "ETH/USD";
-                        currency = "USD";
-                    }
-                    timeframeMins = 3;
-                    index = 4;
-                    return [4 /*yield*/, exchange.fetchOHLCV(pair, timeframeMins + "m")];
+                case 0: return [4 /*yield*/, exchange.fetchTrades(pair)];
                 case 1:
-                    ohlcv = _a.sent();
-                    lastPrice = ohlcv[ohlcv.length - 1][index];
-                    series = ohlcv.map(function (x) { return x[index]; });
-                    console.log("Price of " + pair + " on " + exchange + " is " + (lastPrice + " " + currency));
+                    trades = _a.sent();
+                    console.log("\n\n " + trades[0]);
+                    console.log(trades[0]);
                     return [2 /*return*/];
             }
         });
     });
 }
-exports["default"] = getPriceEth;
+exports["default"] = getPreviousTrades;

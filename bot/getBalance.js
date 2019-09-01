@@ -1,4 +1,5 @@
 "use strict";
+// Currently broken
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -35,30 +36,39 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-function getPriceEth(exchange, isUsd) {
+/**
+ * Fetches the balance at a given exchange.
+ * Only works if the exchange instance passed in has been authenticated with and Key and secret.
+ * If the currency variable is added, function returns the balance of that currency only.
+ * @param exchange An instance of an exchange
+ * @param currency the name of the desired Currency
+ */
+function getBalance(exchange, currency) {
     return __awaiter(this, void 0, void 0, function () {
-        var pair, currency, timeframeMins, index, ohlcv, lastPrice, series;
+        var balanceData, currencyData;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    pair = "ETH/AUD";
-                    currency = "AUD";
-                    // change pair and eth key if usd is the comparison currency
-                    if (isUsd) {
-                        pair = "ETH/USD";
-                        currency = "USD";
-                    }
-                    timeframeMins = 3;
-                    index = 4;
-                    return [4 /*yield*/, exchange.fetchOHLCV(pair, timeframeMins + "m")];
+                    if (!!exchange.secret) return [3 /*break*/, 1];
+                    throw console.error('[getBalance] The exchange given has no api secret added. Please add your api Secret to the exchange instance before passing to this function');
                 case 1:
-                    ohlcv = _a.sent();
-                    lastPrice = ohlcv[ohlcv.length - 1][index];
-                    series = ohlcv.map(function (x) { return x[index]; });
-                    console.log("Price of " + pair + " on " + exchange + " is " + (lastPrice + " " + currency));
+                    if (!!exchange.apiKey) return [3 /*break*/, 2];
+                    throw console.error('[getBalance] The exchange given has no api Key added. Please add you api Key to the exchange instance before passing to this function');
+                case 2: return [4 /*yield*/, exchange.fetchBalance()];
+                case 3:
+                    // Get the balance
+                    balanceData = _a.sent();
+                    _a.label = 4;
+                case 4:
+                    //If currency is provided, check if the currency is supported by the exchange. 
+                    if (exchange.currencies.includes("" + currency)) {
+                        currencyData = balanceData;
+                    }
+                    else {
+                    }
                     return [2 /*return*/];
             }
         });
     });
 }
-exports["default"] = getPriceEth;
+exports["default"] = getBalance;
