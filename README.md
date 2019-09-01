@@ -1,9 +1,8 @@
 # Trading-bot
 
-A cryptocurrency trading bot, made using the ccxt library. Hopefully dockerised. Ideally with back testing.
+A cryptocurrency trading bot, made using the ccxt library. 
 
 # SETUP
-
-clone this repo.
-Run `yarn install` to install dependencies.
-TO run the script, first run `chmod u+x ./run.sh` to give yourself permission, then run `./run.sh`.
+1. Clone this `git clone `
+2. Run `yarn install` to install dependencies.
+3. To start, run `./run.sh`. You may need to give yourself permission with `chmod u+x ./run.sh`.
