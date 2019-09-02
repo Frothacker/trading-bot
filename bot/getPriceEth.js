@@ -35,19 +35,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-function getPriceEth(exchange, isUsd) {
+/**
+ * Gets the closing price a Symbol on an exchange
+ * @param exchange An instantiated exhcange object
+ * @param pair A Currency Pair supported on the passed exchange. e.g "BTC/USD"
+ */
+function getPriceSymbol(exchange, pair) {
     return __awaiter(this, void 0, void 0, function () {
-        var pair, currency, timeframeMins, index, ohlcv, lastPrice, series;
+        var timeframeMins, index, ohlcv, lastPrice, series;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    pair = "ETH/AUD";
-                    currency = "AUD";
-                    // change pair and eth key if usd is the comparison currency
-                    if (isUsd) {
-                        pair = "ETH/USD";
-                        currency = "USD";
-                    }
                     timeframeMins = 3;
                     index = 4;
                     return [4 /*yield*/, exchange.fetchOHLCV(pair, timeframeMins + "m")];
@@ -55,10 +53,10 @@ function getPriceEth(exchange, isUsd) {
                     ohlcv = _a.sent();
                     lastPrice = ohlcv[ohlcv.length - 1][index];
                     series = ohlcv.map(function (x) { return x[index]; });
-                    console.log("Price of " + pair + " on " + exchange + " is " + (lastPrice + " " + currency));
-                    return [2 /*return*/];
+                    console.log("Price of " + pair + " on " + exchange.name + " is " + (lastPrice + " " + pair));
+                    return [2 /*return*/, lastPrice];
             }
         });
     });
 }
-exports["default"] = getPriceEth;
+exports["default"] = getPriceSymbol;

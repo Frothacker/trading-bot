@@ -50,6 +50,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
+// --------------- Notes ---------------
+// Consider 20 day MA vs 10 day MA trading bot based on https://www.tradingview.com/script/2cbpO8lO-MA-10-20-Crossover/
+// 2.
+// Get Price history of last 30 30 days.
+// Use getTrades. Docs are here --> https://github.com/ccxt/ccxt/wiki/Manual#trades-executions-transactions
+var getPriceEth_1 = require("./getPriceEth");
 var ccxt = require("ccxt");
 var fs = require("fs-extra");
 // loop through all the exchanges in the file and instantiate them with their api keys
@@ -86,9 +92,11 @@ function generateExchanges() {
         });
     });
 }
+var e = [];
+// a function to execute asyncrenous things. 
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var e, bittrex, IR;
+        var bittrex, IR;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, generateExchanges()];
@@ -97,29 +105,22 @@ function main() {
                     bittrex = e[0];
                     IR = e[1];
                     console.log(IR.name);
+                    // getBalance(exchange, "ETH");
+                    // let shareBuys = [[7, 600], [3, 599.9]];
+                    // let averagePrice = weightedAverageTradePrice(shareBuys);
+                    // console.log(averagePrice);
+                    // console.log("Average of [2,3,4,5] is -->", getAverage([2, 3, 4, 5])); // as a test:  should return 3.5
+                    // console.log("generated buys are -->", generateBuys(16, 0.5, 100));
+                    // Needs Work
+                    // const buys = generateBuys(0,1,100);
+                    // console.log('buys are -->');
+                    // console.log(buys);
+                    // console.log(buys.buys);
+                    // console.log(buys.amounts);
+                    getPriceEth_1["default"](IR, "BTC/AUD");
                     return [2 /*return*/];
             }
         });
     });
 }
 main();
-// getBalance(exchange, "ETH");
-// let shareBuys = [[7, 600], [3, 599.9]];
-// let averagePrice = weightedAverageTradePrice(shareBuys);
-// console.log(averagePrice);
-// console.log("Average of [2,3,4,5] is -->", getAverage([2, 3, 4, 5])); // as a test:  should return 3.5
-// console.log("generated buys are -->", generateBuys(16, 0.5, 100));
-// Needs Work
-// const buys = generateBuys(0,1,100);
-// console.log('buys are -->');
-// console.log(buys);
-// console.log(buys.buys);
-// console.log(buys.amounts);
-// getPriceEth(exchange, false);
-// getPreviousTrades(exchange, "ETH/AUD");
-// console.log(getAverage([12, 13, 14]));
-// TODO when exhcange is online 
-// async function buyOrder(symbol, amount, price) {
-//     const feedback = exchange.createLimitBuyOrder(symbol, amount, price);
-//     return feedback;
-// }
