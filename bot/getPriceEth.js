@@ -46,7 +46,7 @@ function getPriceSymbol(exchange, pair) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    timeframeMins = 3;
+                    timeframeMins = 15;
                     index = 4;
                     return [4 /*yield*/, exchange.fetchOHLCV(pair, timeframeMins + "m")];
                 case 1:

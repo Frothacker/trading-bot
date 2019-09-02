@@ -1,3 +1,5 @@
+// TODO dosent work with bittrex.  error is --> TICK_NOT_PROVIDED
+
 
 /**
  * Gets the closing price a Symbol on an exchange
