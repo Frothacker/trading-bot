@@ -56,21 +56,22 @@ exports.__esModule = true;
 // Get Price history of last 30 30 days.
 // Use getTrades. Docs are here --> https://github.com/ccxt/ccxt/wiki/Manual#trades-executions-transactions
 var getPriceSymbol_1 = require("./getPriceSymbol");
+var getBalance_1 = require("./getBalance");
 var generateExchanges_1 = require("./generateExchanges");
-var e = [];
 // a function to execute asyncrenous things. 
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var bittrex, IR;
+        var e, bittrex, IR;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, generateExchanges_1["default"]()];
+                case 0:
+                    e = [];
+                    return [4 /*yield*/, generateExchanges_1["default"]()];
                 case 1:
                     e = _a.sent();
                     bittrex = e[0];
                     IR = e[1];
-                    console.log(IR.name);
-                    // getBalance(exchange, "ETH");
+                    getBalance_1["default"](IR, "ETH");
                     // let shareBuys = [[7, 600], [3, 599.9]];
                     // let averagePrice = weightedAverageTradePrice(shareBuys);
                     // console.log(averagePrice);
@@ -82,7 +83,7 @@ function main() {
                     // console.log(buys);
                     // console.log(buys.buys);
                     // console.log(buys.amounts);
-                    getPriceSymbol_1["default"](IR, "BTC/USD");
+                    getPriceSymbol_1["default"](IR, "ETH/AUD");
                     return [2 /*return*/];
             }
         });

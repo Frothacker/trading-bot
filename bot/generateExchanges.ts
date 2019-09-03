@@ -2,7 +2,6 @@ import ccxt = require("ccxt");
 import fs = require("fs-extra");
 // loop through all the exchanges in the file and instantiate them with their api keys
 export default async function generateExchanges() {
-    console.log("ee");
     let instantiatedExchanges = [];
     // Get Keystore File. Pasre it from JSON into an object.
     const path = fs.ensureFileSync('./api_keys.json');

@@ -28,49 +28,45 @@ import generateBuys from './generateBuys';
 import weightedAverageTradePrice from './weightedAverageTradePrice';
 import getBalance from './getBalance';
 
-import generateExchanges  from './generateExchanges';
+import generateExchanges from './generateExchanges';
 
 
-let e = [];
 
 // a function to execute asyncrenous things. 
 async function main() {
-e = await generateExchanges();
 
-let bittrex = e[0];
-let IR = e[1];
-console.log(IR.name);
+    let e = [];
+    e = await generateExchanges();
 
 
+    let bittrex = e[0];
+    let IR = e[1];
+    getBalance(IR, "ETH");
 
-// getBalance(exchange, "ETH");
+    // let shareBuys = [[7, 600], [3, 599.9]];
+    // let averagePrice = weightedAverageTradePrice(shareBuys);
+    // console.log(averagePrice);
 
-// let shareBuys = [[7, 600], [3, 599.9]];
-// let averagePrice = weightedAverageTradePrice(shareBuys);
-// console.log(averagePrice);
+    // console.log("Average of [2,3,4,5] is -->", getAverage([2, 3, 4, 5])); // as a test:  should return 3.5
+    // console.log("generated buys are -->", generateBuys(16, 0.5, 100));
 
-// console.log("Average of [2,3,4,5] is -->", getAverage([2, 3, 4, 5])); // as a test:  should return 3.5
-// console.log("generated buys are -->", generateBuys(16, 0.5, 100));
+    // Needs Work
+    // const buys = generateBuys(0,1,100);
+    // console.log('buys are -->');
+    // console.log(buys);
 
-// Needs Work
-// const buys = generateBuys(0,1,100);
-// console.log('buys are -->');
-// console.log(buys);
+    // console.log(buys.buys);
+    // console.log(buys.amounts);
 
-// console.log(buys.buys);
-// console.log(buys.amounts);
+    getPriceSymbol(IR, "ETH/AUD");
+    // getPreviousTrades(exchange, "ETH/AUD");
+    // console.log(getAverage([12, 13, 14]));
 
-getPriceSymbol(IR, "BTC/USD");
-// getPreviousTrades(exchange, "ETH/AUD");
-// console.log(getAverage([12, 13, 14]));
+    // const result  = await IR.createLimitBuyOrder("ETH/AUD", 1, 100);
+
+    // not yet supported by IR
+    // const openOrder = await IR.fetchOpenOrders("ETH/AUD");
 
 
-// TODO when exhcange is online 
-// async function buyOrder(symbol, amount, price) {
-    //     const feedback = exchange.createLimitBuyOrder(symbol, amount, price);
-    //     return feedback;
-    // }
-    
 }
-    main();
-    
+main();

@@ -44,7 +44,6 @@ function generateExchanges() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    console.log("ee");
                     instantiatedExchanges = [];
                     path = fs.ensureFileSync('./api_keys.json');
                     return [4 /*yield*/, JSON.parse(fs.readFileSync("./api_keys.json", 'utf8'))];

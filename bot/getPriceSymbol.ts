@@ -6,8 +6,7 @@
  * @param exchange An instantiated exhcange object
  * @param pair A Currency Pair supported on the passed exchange. e.g "BTC/USD"
  */
-export default async function getPriceSymbol(exchange, 
-    pair: string) {
+export default async function getPriceSymbol(exchange, pair: string) {
     // Get closing price
     const timeframeMins = 3; // Candle thickness
     const index = 4; // [ timestamp, open, high, low, close, volume ], 4 == closing price
