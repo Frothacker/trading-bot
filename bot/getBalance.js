@@ -45,10 +45,17 @@ exports.__esModule = true;
  */
 function getBalance(exchange, currency) {
     return __awaiter(this, void 0, void 0, function () {
-        var balanceData, currencyData;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var balanceData, unsupportedCurrency, _i, _a, index;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
+                    unsupportedCurrency = true;
+                    console.log(exchange.currencies);
+                    // create an array of the currencies supported
+                    for (_i = 0, _a = exchange.currencies; _i < _a.length; _i++) {
+                        index = _a[_i];
+                        index === currency ? unsupportedCurrency = false : "";
+                    }
                     if (!!exchange.secret) return [3 /*break*/, 1];
                     throw new Error('[getBalance] The exchange given has no api secret added. Please add your api Secret to the exchange instance before passing to this function');
                 case 1:
@@ -57,16 +64,9 @@ function getBalance(exchange, currency) {
                 case 2: return [4 /*yield*/, exchange.fetchBalance()];
                 case 3:
                     // Get the balance
-                    balanceData = _a.sent();
-                    _a.label = 4;
-                case 4:
-                    //If currency is provided, check if the currency is supported by the exchange. 
-                    if (exchange.currencies.includes("" + currency)) {
-                        currencyData = balanceData;
-                    }
-                    else {
-                    }
-                    return [2 /*return*/];
+                    balanceData = _b.sent();
+                    console.log(balanceData);
+                    return [2 /*return*/, balanceData];
             }
         });
     });

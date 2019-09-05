@@ -58,8 +58,8 @@ async function main() {
     // console.log(buys.buys);
     // console.log(buys.amounts);
 
-    getPriceSymbol(IR, "ETH/AUD");
-    // getPreviousTrades(exchange, "ETH/AUD");
+    // getPriceSymbol(IR, "ETH/AUD");
+    // getPreviousTrades(IR, "ETH/AUD");
     // console.log(getAverage([12, 13, 14]));
 
     // const result  = await IR.createLimitBuyOrder("ETH/AUD", 1, 100);

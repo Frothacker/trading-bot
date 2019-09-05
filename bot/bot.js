@@ -50,12 +50,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-// --------------- Notes ---------------
-// Consider 20 day MA vs 10 day MA trading bot based on https://www.tradingview.com/script/2cbpO8lO-MA-10-20-Crossover/
-// 2.
-// Get Price history of last 30 30 days.
-// Use getTrades. Docs are here --> https://github.com/ccxt/ccxt/wiki/Manual#trades-executions-transactions
-var getPriceSymbol_1 = require("./getPriceSymbol");
 var getBalance_1 = require("./getBalance");
 var generateExchanges_1 = require("./generateExchanges");
 // a function to execute asyncrenous things. 
@@ -72,18 +66,6 @@ function main() {
                     bittrex = e[0];
                     IR = e[1];
                     getBalance_1["default"](IR, "ETH");
-                    // let shareBuys = [[7, 600], [3, 599.9]];
-                    // let averagePrice = weightedAverageTradePrice(shareBuys);
-                    // console.log(averagePrice);
-                    // console.log("Average of [2,3,4,5] is -->", getAverage([2, 3, 4, 5])); // as a test:  should return 3.5
-                    // console.log("generated buys are -->", generateBuys(16, 0.5, 100));
-                    // Needs Work
-                    // const buys = generateBuys(0,1,100);
-                    // console.log('buys are -->');
-                    // console.log(buys);
-                    // console.log(buys.buys);
-                    // console.log(buys.amounts);
-                    getPriceSymbol_1["default"](IR, "ETH/AUD");
                     return [2 /*return*/];
             }
         });
