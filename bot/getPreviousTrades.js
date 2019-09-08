@@ -43,7 +43,7 @@ function getPreviousTrades(exchange, pair) {
                 case 0: return [4 /*yield*/, exchange.fetchTrades(pair)];
                 case 1:
                     trades = _a.sent();
-                    console.log("\n\n " + trades[0]);
+                    console.log(trades);
                     console.log(trades[0]);
                     return [2 /*return*/];
             }

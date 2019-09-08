@@ -50,9 +50,54 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var getBalance_1 = require("./getBalance");
 var generateExchanges_1 = require("./generateExchanges");
-// a function to execute asyncrenous things. 
+function getSpreadOverLastMonth(exchange, symbol) {
+    return __awaiter(this, void 0, void 0, function () {
+        var timeframeMins, index, allOHLCV, since, timeframe, limit, ohlcv_1, ohlcv, lastPrice, series;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    timeframeMins = 30;
+                    index = 4;
+                    allOHLCV = [];
+                    if (!exchange.has['fetchOHLCV']) return [3 /*break*/, 4];
+                    // let since = exchange.milliseconds () - 86400000 // -1 day from now // alternatively, fetch from a certain starting datetime
+                    since = exchange.parse8601('2019-09-01T00:00:00Z');
+                    console.log("the first since is  " + since);
+                    timeframe = "60m";
+                    _a.label = 1;
+                case 1:
+                    if (!(since < exchange.milliseconds())) return [3 /*break*/, 4];
+                    limit = 1000 // change for your limit
+                    ;
+                    return [4 /*yield*/, this.sleep(limit)];
+                case 2:
+                    _a.sent();
+                    return [4 /*yield*/, exchange.fetchOHLCV(symbol, timeframe, since, limit)];
+                case 3:
+                    ohlcv_1 = _a.sent();
+                    if (ohlcv_1.length) {
+                        since = ohlcv_1[ohlcv_1.length - 1]['0'];
+                        console.log(since);
+                        allOHLCV = allOHLCV.concat(ohlcv_1);
+                    }
+                    else {
+                    }
+                    return [3 /*break*/, 1];
+                case 4:
+                    console.log(allOHLCV);
+                    console.log(allOHLCV.length);
+                    return [4 /*yield*/, exchange.fetchOHLCV(symbol, timeframeMins + "m", since)];
+                case 5:
+                    ohlcv = _a.sent();
+                    lastPrice = ohlcv[ohlcv.length - 1][index];
+                    series = ohlcv.map(function (x) { return x[index]; });
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+// a function to execute asyncronous things. 
 function main() {
     return __awaiter(this, void 0, void 0, function () {
         var e, bittrex, IR;
@@ -65,7 +110,7 @@ function main() {
                     e = _a.sent();
                     bittrex = e[0];
                     IR = e[1];
-                    getBalance_1["default"](IR, "ETH");
+                    getSpreadOverLastMonth(IR, "ETH/AUD");
                     return [2 /*return*/];
             }
         });

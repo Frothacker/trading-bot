@@ -30,18 +30,59 @@ import getBalance from './getBalance';
 
 import generateExchanges from './generateExchanges';
 
+async function getSpreadOverLastMonth(exchange, symbol: string) {
+    // Get closing price
+    const timeframeMins = 30; // Candle thickness
+    const index = 4; // [ timestamp, open, high, low, close, volume ], 4 == closing price
+    let allOHLCV = []
+    let since;
 
+    if (exchange.has['fetchOHLCV']) {
+        // let since = exchange.milliseconds () - 86400000 // -1 day from now // alternatively, fetch from a certain starting datetime
+        since = exchange.parse8601('2019-09-01T00:00:00Z')
+        console.log(`the first since is  ${since}`);
 
-// a function to execute asyncrenous things. 
+        let timeframe = "60m"
+        while (since < exchange.milliseconds()) {
+            const limit = 1000 // change for your limit
+            // sleep(limit);
+            //  fetchOHLCV (symbol, timeframe = '1m', since = undefined, limit = undefined, params = ˓→{})
+            const ohlcv = await exchange.fetchOHLCV(symbol, timeframe, since, limit)
+            if (ohlcv.length) {
+                since = ohlcv[ohlcv.length - 1]['0']
+                console.log(since);
+                allOHLCV = allOHLCV.concat(ohlcv)
+            } else {
+            }
+        }
+    }
+
+    console.log(allOHLCV);
+    console.log(allOHLCV.length);
+
+    // fetchOHLCV (symbol, timeframe = '1m', since = undefined, limit = undefined, params = {})
+    const ohlcv = await exchange.fetchOHLCV(symbol, `${timeframeMins}m`, since);
+    const lastPrice = ohlcv[ohlcv.length - 1][index]; // closing price
+    let series = ohlcv.map(x => x[index]); // series of closing prices
+
+    // console.log(`[getSpreadOverLastMonth] Series of closing prices are: ${series}`);
+    // console.log(`[getSpreadOverLastMonth] The price of ${pair} on ${exchange.name} is ${lastPrice + " " + pair}`);
+    // console.log(ohlcv);
+    // console.log(ohlcv.length);
+}
+
+// a function to execute asyncronous things. 
 async function main() {
 
     let e = [];
     e = await generateExchanges();
 
-
     let bittrex = e[0];
     let IR = e[1];
-    getBalance(IR, "ETH");
+
+    getSpreadOverLastMonth(IR, "ETH/AUD");
+
+    // getBalance(IR, "ETH");
 
     // let shareBuys = [[7, 600], [3, 599.9]];
     // let averagePrice = weightedAverageTradePrice(shareBuys);
@@ -50,7 +91,7 @@ async function main() {
     // console.log("Average of [2,3,4,5] is -->", getAverage([2, 3, 4, 5])); // as a test:  should return 3.5
     // console.log("generated buys are -->", generateBuys(16, 0.5, 100));
 
-    // Needs Work
+    // Needs Work - as it may just gets point along an expoential curve, as compared tofitting an expoenetional curve inside of the bounds. 
     // const buys = generateBuys(0,1,100);
     // console.log('buys are -->');
     // console.log(buys);
@@ -59,7 +100,12 @@ async function main() {
     // console.log(buys.amounts);
 
     // getPriceSymbol(IR, "ETH/AUD");
+
+
+
     // getPreviousTrades(IR, "ETH/AUD");
+
+
     // console.log(getAverage([12, 13, 14]));
 
     // const result  = await IR.createLimitBuyOrder("ETH/AUD", 1, 100);
